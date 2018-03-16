@@ -91,7 +91,7 @@ const urls = process.argv.slice(2);
 urls.forEach(url => extract(url)
   .then(parse)
   .then(({idlNames}) => {
-    Object.keys(idlNames).filter(n => idlNames[n].type === "interface")
+    Object.keys(idlNames).filter(n => idlNames[n].type === "interface" && (!idlNames[n].extAttrs || !idlNames[n].extAttrs.find(ea => ea.name === "NoInterfaceOjbect")))
       .forEach(interface => {
         const bcd = {api:{}};
         bcd.api[interface] = {};
@@ -99,12 +99,12 @@ urls.forEach(url => extract(url)
         bcd.api[interface].__compat.mdn_url = base_mdn_url + interface;
         // add constructor(s) first
         if (idlNames.extAttrs) {
-          if (idlNames.extAttrs.find(ea => ea.name==="Constructor")) {
+          if (idlNames.extAttrs.find(ea => ea.name === "Constructor")) {
             bcd.api[interface][interface] = {};
             bcd.api[interface][interface].__compat = {...bcd_skeleton};
             bcd.api[interface][interface].__compat.mdn_url = base_mdn_url + interface + "/" + interface;
           }
-          const namedconstructor = idlNames.extAttrs.find(ea => ea.name==="NamedConstructor");
+          const namedconstructor = idlNames.extAttrs.find(ea => ea.name === "NamedConstructor");
           if (namedconstructor) {
             const name =namedconstructor.rhs.value;
             bcd.api[interface][name] = {};
