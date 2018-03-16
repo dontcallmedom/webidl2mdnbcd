@@ -53,6 +53,34 @@ const bcd_skeleton = {
 
 const propertiesFirst = (a,b) => a.type === b.type ? a.name.localeCompare(b.name) :  (a.type === "attribute" ? -1 : 1);
 
+const loadBCD = path => {
+      const file = fs.readFileSync(path, 'utf-8');
+      return JSON.parse(file);
+};
+
+const listExistingBCD = () => {
+  const existingBCD = {};
+  fs.readdirSync('.')
+    .filter(p => p.match(/\.json$/))
+    .forEach(path => {
+      const bcd = loadBCD(path);
+      if (bcd.api) {
+        existingBCD[Object.keys(bcd.api)[0]] = path;
+      } else {
+        console.error(path + " has a bogus format");
+      }
+    });
+  return existingBCD;
+}
+
+// compare data in existing files with extracted data
+const augmentExistingBCD = (existingbcd, webidlbcd) => {
+  Object.keys(webidlbcd).filter(m => !existingbcd[m])
+    .forEach(m => existingbcd[m] = webidlbcd[m]);
+  // TODO: detect issues the other way around
+};
+
+const existingBCD = listExistingBCD();
 const urls = process.argv.slice(2);
 
 urls.forEach(url => extract(url)
@@ -71,9 +99,13 @@ urls.forEach(url => extract(url)
             bcd.api[interface][m.name].__compat = {...bcd_skeleton};
             bcd.api[interface][m.name].__compat.mdn_url = base_mdn_url + interface + "/" + m.name;
           });
-        // TODO:
-        // check if file already exists
-        fs.writeFileSync(interface + ".json", JSON.stringify(bcd, null, 2));
+        if (existingBCD[interface]) {
+          const existing = loadBCD(existingBCD[interface]);
+          augmentExistingBCD(existing.api[interface], bcd.api[interface]);
+          fs.writeFileSync(existingBCD[interface], JSON.stringify(existing, null, 2));
+        } else {
+          fs.writeFileSync(interface + ".json", JSON.stringify(bcd, null, 2));
+        }
       });
-
-  });
+  })
+            );
