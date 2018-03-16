@@ -91,7 +91,7 @@ const urls = process.argv.slice(2);
 urls.forEach(url => extract(url)
   .then(parse)
   .then(({idlNames}) => {
-    Object.keys(idlNames).filter(n => idlNames[n].type === "interface" && (!idlNames[n].extAttrs || !idlNames[n].extAttrs.find(ea => ea.name === "NoInterfaceOjbect")))
+    Object.keys(idlNames).filter(n => idlNames[n].type === "interface" && (!idlNames[n].extAttrs || !idlNames[n].extAttrs.find(ea => ea.name === "NoInterfaceObject")))
       .forEach(interface => {
         const bcd = {api:{}};
         bcd.api[interface] = {};
