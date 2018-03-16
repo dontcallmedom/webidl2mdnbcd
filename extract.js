@@ -42,6 +42,9 @@ const bcd_skeleton = {
       },
       "safari_ios": {
         "version_added": null
+      },
+      "samsunginternet_android": {
+        "version_added": null
       }
     },
     "status": {
