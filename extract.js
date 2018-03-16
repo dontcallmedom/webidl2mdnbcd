@@ -92,6 +92,22 @@ urls.forEach(url => extract(url)
         bcd.api[interface] = {};
         bcd.api[interface].__compat = {...bcd_skeleton};
         bcd.api[interface].__compat.mdn_url = base_mdn_url + interface;
+        // add constructor(s) first
+        if (idlNames.extAttrs) {
+          if (idlNames.extAttrs.find(ea => ea.name==="Constructor")) {
+            bcd.api[interface][interface] = {};
+            bcd.api[interface][interface].__compat = {...bcd_skeleton};
+            bcd.api[interface][interface].__compat.mdn_url = base_mdn_url + interface + "/" + interface;
+          }
+          const namedconstructor = idlNames.extAttrs.find(ea => ea.name==="NamedConstructor");
+          if (namedconstructor) {
+            const name =namedconstructor.rhs.value;
+            bcd.api[interface][name] = {};
+            bcd.api[interface][name].__compat = {...bcd_skeleton};
+            bcd.api[interface][name].__compat.mdn_url = base_mdn_url + interface + "/" + name;
+          }
+
+        }
         idlNames[interface].members.filter(m => m.name)
           .sort(propertiesFirst)
           .forEach(m => {
