@@ -126,7 +126,7 @@ urls.forEach(url => extract(url)
             fs.writeFileSync(existingBCD[interface], JSON.stringify(existing, null, 2));
           }
         } else {
-          fs.writeFileSync(interface + ".json", JSON.stringify(bcd, null, 2));
+          fs.writeFileSync(interface + ".json", JSON.stringify(bcd, null, 2) + "\n");
         }
       });
   })
