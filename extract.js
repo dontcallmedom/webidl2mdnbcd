@@ -78,8 +78,10 @@ const listExistingBCD = () => {
 
 // compare data in existing files with extracted data
 const augmentExistingBCD = (existingbcd, webidlbcd) => {
-  Object.keys(webidlbcd).filter(m => !existingbcd[m])
+  const diffs = Object.keys(webidlbcd).filter(m => !existingbcd[m]);
+  diffs
     .forEach(m => existingbcd[m] = webidlbcd[m]);
+  return diffs.length > 0;
   // TODO: detect issues the other way around
 };
 
@@ -120,8 +122,9 @@ urls.forEach(url => extract(url)
           });
         if (existingBCD[interface]) {
           const existing = loadBCD(existingBCD[interface]);
-          augmentExistingBCD(existing.api[interface], bcd.api[interface]);
-          fs.writeFileSync(existingBCD[interface], JSON.stringify(existing, null, 2));
+          if (augmentExistingBCD(existing.api[interface], bcd.api[interface])) {
+            fs.writeFileSync(existingBCD[interface], JSON.stringify(existing, null, 2));
+          }
         } else {
           fs.writeFileSync(interface + ".json", JSON.stringify(bcd, null, 2));
         }
