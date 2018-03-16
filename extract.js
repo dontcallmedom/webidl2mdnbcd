@@ -123,7 +123,7 @@ urls.forEach(url => extract(url)
         if (existingBCD[interface]) {
           const existing = loadBCD(existingBCD[interface]);
           if (augmentExistingBCD(existing.api[interface], bcd.api[interface])) {
-            fs.writeFileSync(existingBCD[interface], JSON.stringify(existing, null, 2));
+            fs.writeFileSync(existingBCD[interface], JSON.stringify(existing, null, 2) + "\n");
           }
         } else {
           fs.writeFileSync(interface + ".json", JSON.stringify(bcd, null, 2) + "\n");
