@@ -53,7 +53,9 @@ const bcd_skeleton = {
 
 const propertiesFirst = (a,b) => a.type === b.type ? a.name.localeCompare(b.name) :  (a.type === "attribute" ? -1 : 1);
 
-extract(process.argv[2])
+const urls = process.argv.slice(2);
+
+urls.forEach(url => extract(url)
   .then(parse)
   .then(({idlNames}) => {
     Object.keys(idlNames).filter(n => idlNames[n].type === "interface")
