@@ -85,9 +85,13 @@ const augmentExistingBCD = (existingbcd, webidlbcd) => {
   // TODO: detect issues the other way around
 };
 
-const existingBCD = listExistingBCD();
 const urls = process.argv.slice(2);
+if (!urls.length) {
+  console.log("Usage: " + process.argv.slice(0,2).join(" ") + " url1 [url2...]");
+  process.exit(2);
+}
 
+const existingBCD = listExistingBCD();
 urls.forEach(url => extract(url)
              .then(parse)
              .then(({idlNames, idlExtendedNames}) => {
