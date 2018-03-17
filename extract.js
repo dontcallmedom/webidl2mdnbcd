@@ -86,7 +86,7 @@ urls.forEach(url => extract(url)
                        bcd.api[interface][name] = buildBCD(interface, name);
                      }
                    }
-                   interfaces[interface].members.filter(m => m.name)
+                   interfaces[interface].members.filter(m => m.name && m.type !== "const")
                      .sort(propertiesFirst)
                      .forEach(m => {
                        bcd.api[interface][m.name] = buildBCD(interface, m.name);
