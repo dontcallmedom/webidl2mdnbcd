@@ -4,55 +4,7 @@ const fs = require("fs");
 
 const base_mdn_url = "https://developer.mozilla.org/docs/Web/API/";
 
-const bcd_skeleton = {
-  mdn_url:  "",
-  support: {
-    "webview_android": {
-      "version_added": null
-    },
-    "chrome": {
-      "version_added": null
-    },
-    "chrome_android": {
-      "version_added": null
-    },
-    "edge": {
-      "version_added": null
-    },
-    "edge_mobile": {
-      "version_added": null
-    },
-    "firefox": {
-      "version_added": null
-    },
-    "firefox_android": {
-      "version_added": null
-    },
-    "ie": {
-      "version_added": null
-    },
-    "opera": {
-      "version_added": null
-    },
-    "opera_android": {
-      "version_added": null
-    },
-    "safari": {
-      "version_added": null
-    },
-    "safari_ios": {
-      "version_added": null
-    },
-    "samsunginternet_android": {
-      "version_added": null
-    }
-  },
-  "status": {
-    "experimental": false,
-    "standard_track": true,
-    "deprecated": false
-  }
-};
+const bcd_template = fs.readFileSync(__dirname + "/skeleton.json", "utf-8");
 
 const propertiesFirst = (a,b) => a.type === b.type ? a.name.localeCompare(b.name) :  (a.type === "attribute" ? -1 : 1);
 
@@ -91,9 +43,20 @@ if (!urls.length) {
   process.exit(2);
 }
 
+const buildBCD = function (interface, name) {
+  const bcd = {};
+  bcd.__compat = JSON.parse(bcd_template);
+  bcd.__compat.mdn_url = base_mdn_url + interface + (name ? "/" + name : "");
+  if (nonStandard) {
+    bcd.__compat.status.standard_track = false;
+  }
+  return bcd;
+}
+
 const existingBCD = listExistingBCD();
 urls.forEach(url => extract(url)
              .then(parse)
+             .catch(err => {console.error(err); return {idlNames:{}, idlExtendedNames: {}};})
              .then(({idlNames, idlExtendedNames}) => {
                const interfaces = {...idlNames};
                Object.keys(idlExtendedNames).forEach(i => {
@@ -108,30 +71,22 @@ urls.forEach(url => extract(url)
                Object.keys(interfaces).filter(n => interfaces[n].type === "interface" && (interfaces[n].extAttrs.length === 0 || !interfaces[n].extAttrs.find(ea => ea.name === "NoInterfaceObject")))
                  .forEach(interface => {
                    const bcd = {api:{}};
-                   bcd.api[interface] = {};
-                   bcd.api[interface].__compat = {...bcd_skeleton};
-                   bcd.api[interface].__compat.mdn_url = base_mdn_url + interface;
+                   bcd.api[interface] = buildBCD(interface);
                    // add constructor(s) first
                    if (interfaces.extAttrs) {
                      if (interfaces.extAttrs.find(ea => ea.name === "Constructor")) {
-                       bcd.api[interface][interface] = {};
-                       bcd.api[interface][interface].__compat = {...bcd_skeleton};
-                       bcd.api[interface][interface].__compat.mdn_url = base_mdn_url + interface + "/" + interface;
+                       bcd.api[interface][interface] = buildBCD(interface, interface);
                      }
                      const namedconstructor = interfaces.extAttrs.find(ea => ea.name === "NamedConstructor");
                      if (namedconstructor) {
-                       const name =namedconstructor.rhs.value;
-                       bcd.api[interface][name] = {};
-                       bcd.api[interface][name].__compat = {...bcd_skeleton};
-                       bcd.api[interface][name].__compat.mdn_url = base_mdn_url + interface + "/" + name;
+                       const name = namedconstructor.rhs.value;
+                       bcd.api[interface][name] = buildBCD(interface, name);
                      }
                    }
                    interfaces[interface].members.filter(m => m.name)
                      .sort(propertiesFirst)
                      .forEach(m => {
-                       bcd.api[interface][m.name] = {};
-                       bcd.api[interface][m.name].__compat = {...bcd_skeleton};
-                       bcd.api[interface][m.name].__compat.mdn_url = base_mdn_url + interface + "/" + m.name;
+                       bcd.api[interface][m.name] = buildBCD(interface, m.name);
                      });
                    if (existingBCD[interface]) {
                      const existing = loadBCD(existingBCD[interface]);
