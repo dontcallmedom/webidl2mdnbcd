@@ -37,9 +37,12 @@ const augmentExistingBCD = (existingbcd, webidlbcd) => {
   // TODO: detect issues the other way around
 };
 
-const urls = process.argv.slice(2);
+// --non-standard option to mark WebIDL extracted from non-standard track documents
+const nonStandard = (process.argv[2] == "--non-standard");
+
+const urls = process.argv.slice(nonStandard ? 3 : 2);
 if (!urls.length) {
-  console.log("Usage: " + process.argv.slice(0,2).join(" ") + " url1 [url2...]");
+  console.log("Usage: " + process.argv.slice(0,2).join(" ") + " [--non-standard] url1 [url2...]");
   process.exit(2);
 }
 
