@@ -67,11 +67,12 @@ urls.forEach(url => extract(url)
                    if (!interfaces[ext.name]) {
                      interfaces[ext.name] = {...ext};
                    } else {
-                     interfaces[ext.name].members = interfaces[ext.name].members.concat(ext.members);
+                     interfaces[ext.name].members = (interfaces[ext.name].members || []).concat(ext.members);
                    }
                  });
                });
-               Object.keys(interfaces).filter(n => interfaces[n].type === "interface" && (interfaces[n].extAttrs.length === 0 || !interfaces[n].extAttrs.find(ea => ea.name === "NoInterfaceObject")))
+               // TODO: check that interface mixin should indeed be treated as interfaces in MDN
+               Object.keys(interfaces).filter(n => ["interface", "interface mixin"].includes(interfaces[n].type) && (interfaces[n].extAttrs.length === 0 || !interfaces[n].extAttrs.find(ea => ea.name === "NoInterfaceObject")))
                  .forEach(interface => {
                    const bcd = {api:{}};
                    bcd.api[interface] = buildBCD(interface);
@@ -86,6 +87,7 @@ urls.forEach(url => extract(url)
                        bcd.api[interface][name] = buildBCD(interface, name);
                      }
                    }
+                   // TODO: check if extended / included interface members should be added here
                    interfaces[interface].members.filter(m => m.name && m.type !== "const")
                      .sort(propertiesFirst)
                      .forEach(m => {
