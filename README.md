@@ -1,1 +1,1 @@
-This tool relies on using the [reffy](https://github.com/tidoust/reffy) module ([not yet available as an NPM module](https://github.com/tidoust/reffy/issues/90)) to extract WebIDL fragments from specifications and generate skeleton of MDN Browser Compatibility Data.
+This tool relies on using the [reffy](https://github.com/tidoust/reffy) module ([not yet available as an NPM module](https://github.com/tidoust/reffy/issues/90)) to extract WebIDL fragments from specifications and generate skeleton of [MDN Browser Compatibility Data](https://github.com/mdn/browser-compat-data).
