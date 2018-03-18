@@ -8,4 +8,4 @@ Parse WebIDL out of a list of specs at the said URLs, and generate or update Bro
 The `--non-standard` flag marks the features as `standard: false` in the relevant `status` properties.
 
 # Install
-`npm install` (needs reffy available on npm [which it isn't yet](https://github.com/tidoust/reffy/issues/90]).
+`npm install` (needs reffy available on npm [which it isn't yet](https://github.com/tidoust/reffy/issues/90])).
